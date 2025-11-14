@@ -6,7 +6,11 @@ const fs = require('fs');
 const path = require('path');
 
 // 读取小程序的 knowledge.js 文件
-const knowledgeJsPath = path.join(__dirname, '../utils/knowledge.js');
+// 优先使用当前目录的 utils/knowledge.js，如果不存在则尝试上级目录
+let knowledgeJsPath = path.join(__dirname, 'utils/knowledge.js');
+if (!fs.existsSync(knowledgeJsPath)) {
+    knowledgeJsPath = path.join(__dirname, '../utils/knowledge.js');
+}
 
 // 直接 require 知识库文件
 let categories, questions;

@@ -5,3 +5,4 @@ yarn-error.log
 .DS_Store
 data/knowledge.json
 data/knowledge.js
+# utils/knowledge.js 现在允许上传

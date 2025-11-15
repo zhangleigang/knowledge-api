@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const compression = require('compression');
 const knowledgeData = require('./data/knowledge');
+const authRoutes = require('./routes/auth');
+const { optionalAuthMiddleware } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,6 +12,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors()); // 允许跨域
 app.use(compression()); // 启用 gzip 压缩
 app.use(express.json());
+
+// 认证路由
+app.use('/api/auth', authRoutes);
+
+// 可选认证中间件（为所有 API 添加用户信息，但不强制登录）
+app.use('/api', optionalAuthMiddleware);
 
 // 健康检查
 app.get('/health', (req, res) => {
@@ -169,10 +177,20 @@ app.listen(PORT, () => {
     console.log(`📊 题目总数: ${knowledgeData.questions.length}`);
     console.log(`📁 分类总数: ${knowledgeData.categories.length}`);
     console.log(`\n可用的 API 端点:`);
+    console.log(`\n📚 知识库 API:`);
     console.log(`  GET  /health                    - 健康检查`);
     console.log(`  GET  /api/categories            - 获取所有分类`);
     console.log(`  GET  /api/questions             - 获取题目列表（支持分页）`);
     console.log(`  GET  /api/questions/:id         - 获取题目详情`);
     console.log(`  GET  /api/knowledge/full        - 获取完整数据`);
     console.log(`  GET  /api/knowledge/version     - 获取数据版本`);
+    console.log(`\n🔐 认证 API:`);
+    console.log(`  POST /api/auth/login            - 静默登录`);
+    console.log(`  POST /api/auth/phone-login      - 手机号登录`);
+    console.log(`  POST /api/auth/check            - 检查token`);
+    console.log(`  POST /api/auth/update-profile   - 更新用户信息`);
+    console.log(`\n⚙️  环境配置:`);
+    console.log(`  WECHAT_APPID: ${process.env.WECHAT_APPID ? '已配置' : '未配置（使用开发模式）'}`);
+    console.log(`  WECHAT_SECRET: ${process.env.WECHAT_SECRET ? '已配置' : '未配置（使用开发模式）'}`);
+    console.log(`  JWT_SECRET: ${process.env.JWT_SECRET ? '已配置' : '使用默认值'}`);
 });
